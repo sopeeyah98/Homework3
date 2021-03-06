@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Homework3</string>
+    <string name="character">Character</string>
+    <string name="location">Location</string>
+    <string name="episode">Episode</string>
+    <string name="characters">Characters:</string>
+    <string name="more_info">More Information</string>
+</resources>
