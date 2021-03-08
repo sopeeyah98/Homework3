@@ -6,13 +6,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 
-import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -22,10 +18,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Semaphore;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -132,8 +126,8 @@ public class MainActivity extends AppCompatActivity {
                     for (int i = 0; i < jsonArray.length(); i++){
                         JSONObject currentObj = jsonArray.getJSONObject(i);
                         Location location = new Location(currentObj.getString("name"),
-                                                        currentObj.getString("type"),
-                                                        currentObj.getString("dimension"));
+                                currentObj.getString("type"),
+                                currentObj.getString("dimension"));
                         locations.add(location);
                     }
                     viewModel.setLocations(locations);

@@ -1,5 +1,11 @@
 package com.example.homework3;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +17,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -66,7 +74,6 @@ public class EpisodeFragment extends Fragment {
                             client.get(urls.getString(i), new AsyncHttpResponseHandler() {
                                 @Override
                                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                                    Log.d("success", new String(responseBody));
                                     try{
                                         JSONObject character = new JSONObject(new String(responseBody));
                                         if (finalI == 0)
@@ -81,7 +88,7 @@ public class EpisodeFragment extends Fragment {
                                 }
                                 @Override
                                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-
+                                    Log.e("error", new String(responseBody));
                                 }
                             });
                         }
@@ -95,12 +102,41 @@ public class EpisodeFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("https://rickandmorty.fandom.com/wiki/"));
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 0, intent, 0);
+                String url = "https://rickandmorty.fandom.com/wiki/" + textView_epName.getText().toString().replace(" ","_");
                 String notification = "To read more information about Episode " + textView_ep.getText().toString() + ", " +
-                        "please visit: https://rickandmorty.fandom.com/wiki/" + textView_epName.getText().toString() +".";
+                        "please visit: " + url +".";
 
+                createNotificationChannel();
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext(), "CHANNEL1")
+                        .setSmallIcon(R.drawable.ic_baseline_notifications_24)
+                        .setContentTitle("More Info")
+                        .setContentText(notification)
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText(notification))
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                        .setContentIntent(pendingIntent)
+                        .setAutoCancel(true);
+                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getContext());
+                notificationManager.notify(1, builder.build());
             }
         });
-
         return view;
+    }
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "channel";
+            String description = "description";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("CHANNEL1", name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getActivity().getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }
